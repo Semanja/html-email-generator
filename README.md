@@ -9,6 +9,9 @@ html-email-generator/
 ├── html_generator.html    ← главный файл, открывается в браузере
 ├── инструкция.html        ← подробная инструкция
 ├── mammoth.browser.min.js ← библиотека для парсинга .docx (нужна, не удалять)
+├── assets/                ← скриншоты
+│   ├── button-modal.jpg
+│   └── result-html.jpg
 └── README.md              ← этот файл
 ```
 
@@ -20,6 +23,18 @@ html-email-generator/
 4. Скопируй готовый HTML кнопкой «📋 Скопировать» и вставь в платформу рассылки.
 
 Подробности и FAQ — в файле `инструкция.html` (есть ссылка в шапке самого генератора).
+
+## Скриншоты
+
+<p align="center">
+  <img src="assets/button-modal.jpg" width="500" alt="Настройка кнопки">
+  <br><em>Модалка настройки кнопки — цвет фона, текста, ссылка</em>
+</p>
+
+<p align="center">
+  <img src="assets/result-html.jpg" width="600" alt="Готовый HTML">
+  <br><em>Результат конвертации — готовый HTML для вставки в рассылку</em>
+</p>
 
 ## Что умеет
 
