@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Инструкция — HTML для писем</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f0f2f5;
+  color: #1a1a2e;
+  min-height: 100vh;
+}
+
+.header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.header h1 { font-size: 18px; font-weight: 600; }
+.header .badge {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #99aabb;
+  font-size: 11px;
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+.header .spacer { flex: 1; }
+.header .help-link {
+  color: #99aabb;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.header .help-link:hover { color: white; background: rgba(255,255,255,0.08); }
+
+.content { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 28px 32px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
+.subtitle { color: #666; font-size: 14px; margin-bottom: 28px; }
+
+.steps { list-style: none; counter-reset: step; }
+.steps li {
+  counter-increment: step;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+.steps li::before {
+  content: counter(step);
+  min-width: 28px;
+  height: 28px;
+  background: #4e9af1;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.steps li .body { line-height: 1.6; font-size: 14px; }
+.steps li .body strong { color: #1a1a2e; }
+.steps li .body p { margin-bottom: 6px; }
+.steps li .body p:last-child { margin-bottom: 0; }
+
+.tip {
+  background: #f0f7ff;
+  border-left: 3px solid #4e9af1;
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #2c4a6e;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+.warn {
+  background: #fff8f0;
+  border-left: 3px solid #f06235;
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #7a3a10;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+code {
+  background: #f0f2f5;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+  font-size: 12px;
+  color: #c7254e;
+}
+
+.schema {
+  background: #1a1a2e;
+  color: #a8d8a8;
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 10px;
+  overflow-x: auto;
+}
+
+.faq-item { margin-bottom: 16px; }
+.faq-q {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a2e;
+  margin-bottom: 6px;
+  display: flex;
+  gap: 8px;
+}
+.faq-q::before { content: "Q"; color: #4e9af1; font-weight: 700; }
+.faq-a {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #444;
+  padding-left: 20px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📖 Инструкция — HTML для писем</h1>
+  <span class="badge">offline tool</span>
+  <div class="spacer"></div>
+  <a class="help-link" href="html_generator.html">← К генератору</a>
+</div>
+
+<div class="content">
+
+  <h2>✉️ Word → HTML для писем</h2>
+  <p class="subtitle">Загружает <code>.docx</code> и превращает его в готовый email-HTML с таблицами, кнопками и инлайн-стилями. Совместимо с Gmail, Unisender, GetCourse и другими платформами рассылок.</p>
+
+  <div class="card">
+    <div class="card-title">🚀 Как пользоваться</div>
+    <ol class="steps">
+      <li><div class="body"><p>Открой <code>html_generator.html</code> в любом современном браузере (Chrome, Firefox, Edge).</p></div></li>
+      <li><div class="body"><p>Перетащи <code>.docx</code>-файл в зону загрузки или нажми на неё и выбери файл вручную.</p></div></li>
+      <li><div class="body"><p>Нажми <strong>«⚙️ Конвертировать»</strong>.</p></div></li>
+      <li><div class="body"><p>Если в документе есть строки <code>Кнопка: …</code> — для каждой откроется диалог с настройкой цвета и ссылки.</p></div></li>
+      <li><div class="body"><p>В нижней области появится готовый HTML-код. Жми <strong>«📋 Скопировать»</strong> и вставляй в платформу рассылки.</p></div></li>
+    </ol>
+    <div class="tip">Программа работает полностью офлайн — никакие данные никуда не отправляются, всё происходит в твоём браузере.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔘 Кнопки в письме</div>
+    <p style="font-size:14px;margin-bottom:12px;">Чтобы в письме появилась кнопка-ссылка, напиши в Word-документе отдельной строкой:</p>
+    <div class="schema">Кнопка: Текст надписи на кнопке</div>
+    <p style="font-size:14px;margin-top:12px;margin-bottom:8px;">После запуска конвертации программа найдёт каждую такую строку и откроет диалог:</p>
+    <ul style="font-size:14px;line-height:1.8;padding-left:18px;">
+      <li><strong>Цвет фона</strong> — выбор через colorpicker или ввод HEX.</li>
+      <li><strong>Цвет текста</strong> — по умолчанию белый.</li>
+      <li><strong>Ссылка (URL)</strong> — куда ведёт кнопка.</li>
+      <li><strong>Предпросмотр</strong> обновляется на лету.</li>
+    </ul>
+    <div class="tip">По умолчанию цвет фона кнопки — <code>#f06235</code> (оранжевый). Можно изменить при вставке.</div>
+    <div class="warn">Если нажмёшь <strong>«Пропустить»</strong> в диалоге — строка <code>Кнопка: …</code> останется в письме как обычный текст. Полезно, если в документе оказалось ложное совпадение.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 Что попадает в HTML</div>
+    <ul style="font-size:14px;line-height:1.8;padding-left:18px;">
+      <li><strong>Заголовки</strong> <code>H1–H4</code> — стили шрифта и отступов уже инлайн.</li>
+      <li><strong>Абзацы</strong> — шрифт Arial 14px, цвет <code>#1a1a1a</code>, межстрочный 1.6.</li>
+      <li><strong>Таблицы</strong> — рамки <code>1px solid #000</code>, ширина 100%, выравнивание по центру.</li>
+      <li><strong>Списки</strong> — нумерованные и маркированные с правильными отступами.</li>
+      <li><strong>Ссылки</strong> — цвет <code>#0969da</code> (синий).</li>
+      <li><strong>Жирный, курсив, подчёркивание, зачёркивание</strong> — сохраняются.</li>
+      <li><strong>Изображения</strong> из <code>.docx</code> — встроятся как base64 прямо в HTML.</li>
+      <li><strong>Все блоки</strong> центрируются, максимальная ширина письма — 600px (стандарт для email).</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚠️ Что НЕ переносится</div>
+    <ul style="font-size:14px;line-height:1.8;padding-left:18px;">
+      <li>Сложное оформление Word (нестандартные стили, рамки текста, теневые эффекты).</li>
+      <li>Шрифты документа — в письме всегда Arial для совместимости.</li>
+      <li>Цвета текста из Word — заменяются на чёрный <code>#1a1a1a</code> для контраста.</li>
+      <li>Колонтитулы, нумерация страниц, сноски.</li>
+      <li>Формат <code>.doc</code> — не поддерживается браузером. Открой в Word и сохрани как <code>.docx</code>.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">❓ Частые вопросы</div>
+
+    <div class="faq-item">
+      <div class="faq-q">В письме синий текст на кнопке вместо нужного цвета</div>
+      <div class="faq-a">При вставке кнопки в диалоге задай цвет текста через colorpicker (по умолчанию белый). Синий <code>#0969da</code> применяется только к обычным ссылкам <code>&lt;a&gt;</code>, не к кнопкам.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Таблица из Word оказалась без рамок</div>
+      <div class="faq-a">Программа автоматически добавляет рамки ко всем настоящим таблицам. Если рамок нет — возможно, в документе не таблица, а текст в столбцах через табуляции. Переделай как обычную таблицу в Word.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Картинки из документа потерялись</div>
+      <div class="faq-a">Картинки встраиваются как base64. Если документ большой — итоговый HTML тоже большой, но письмо отобразится. Если картинки совсем не появились — возможно, в Word они вставлены не как «Рисунок», а как объект OLE; пересохрани как обычные картинки.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Программа открывается, но ругается на mammoth</div>
+      <div class="faq-a">Файл <code>mammoth.browser.min.js</code> должен лежать в той же папке, что и <code>html_generator.html</code>. Если его нет — скачай по ссылке из жёлтой плашки на главной странице генератора и положи рядом.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Работает без интернета?</div>
+      <div class="faq-a">Да, полностью офлайн. Никакие данные не отправляются на сервер. Открыть можно даже двойным кликом по файлу.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Куда вставлять полученный HTML?</div>
+      <div class="faq-a">Большинство платформ рассылок (Unisender, Mailchimp, GetCourse, SendPulse) имеют опцию «вставить свой HTML» при создании письма. Открой эту опцию, вставь скопированный код — увидишь готовый шаблон.</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

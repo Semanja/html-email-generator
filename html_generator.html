@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML для писем</title>
+<script src="mammoth.browser.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f0f2f5;
+  color: #1a1a2e;
+  min-height: 100vh;
+}
+
+.header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.header h1 { font-size: 18px; font-weight: 600; }
+.header .badge {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #99aabb;
+  font-size: 11px;
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+.header .spacer { flex: 1; }
+.header .help-link {
+  color: #99aabb;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.header .help-link:hover { color: white; background: rgba(255,255,255,0.08); }
+
+.content { max-width: 960px; margin: 0 auto; padding: 28px 24px; }
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 22px 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #8899aa;
+  margin-bottom: 14px;
+}
+
+.drop-zone {
+  border: 2px dashed #d0d7de;
+  border-radius: 8px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fafbfc;
+  user-select: none;
+}
+.drop-zone:hover, .drop-zone.over { border-color: #4e9af1; background: #f0f7ff; }
+.drop-zone input[type=file] { display: none; }
+.drop-zone .dz-icon { font-size: 34px; margin-bottom: 8px; }
+.drop-zone .dz-hint { font-size: 14px; color: #555; line-height: 1.5; }
+.drop-zone .dz-hint b { color: #4e9af1; }
+.drop-zone .dz-file { margin-top: 10px; font-size: 13px; color: #27ae60; font-weight: 600; }
+
+label.input-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+textarea, input.text-input {
+  width: 100%;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 11px 13px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  background: #fafbfc;
+  color: #1a1a2e;
+  outline: none;
+  transition: border-color 0.2s;
+}
+textarea { resize: vertical; }
+textarea:focus, input.text-input:focus { border-color: #4e9af1; background: white; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.btn-primary { background: #4e9af1; color: white; }
+.btn-primary:hover { background: #3a85d6; }
+.btn-sm { padding: 7px 16px; font-size: 13px; }
+.btn-copy { background: #27ae60; color: white; }
+.btn-copy:hover { background: #219a52; }
+.btn-copy.done { background: #7f8c8d; cursor: default; }
+.btn-ghost { background: #eee; color: #333; }
+.btn-ghost:hover { background: #ddd; }
+
+.output-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.sep { height: 1px; background: #edf0f2; margin: 16px 0; }
+
+.status {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  display: none;
+}
+.status.show { display: block; }
+.status.err  { background: #ffeef0; color: #c0392b; border: 1px solid #f5c6cb; }
+.status.ok   { background: #e6ffed; color: #1a7f37; border: 1px solid #abebc6; }
+.status.info { background: #fff8e1; color: #7d6608; border: 1px solid #fce18e; }
+
+.alert {
+  background: #fff8e1;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 13px 16px;
+  font-size: 13px;
+  color: #664d03;
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+.alert code { background: rgba(0,0,0,0.08); padding: 1px 5px; border-radius: 3px; font-family: monospace; }
+
+/* Button modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: white;
+  border-radius: 12px;
+  padding: 28px 28px 24px;
+  max-width: 460px;
+  width: 92%;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 6px;
+}
+.modal-counter {
+  font-size: 11px;
+  font-weight: 400;
+  color: #999;
+  margin-left: 8px;
+}
+.modal-btn-label {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 20px;
+  padding: 9px 13px;
+  background: #f5f7fa;
+  border-radius: 6px;
+  border-left: 3px solid #4e9af1;
+}
+.modal-btn-label span {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+.modal-field { margin-bottom: 14px; }
+.modal-field label.input-label { margin-bottom: 6px; }
+.color-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.color-row input[type=color] {
+  width: 44px;
+  height: 38px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 2px 3px;
+  background: #fafbfc;
+  flex-shrink: 0;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.btn-preview-wrap {
+  margin-top: 10px;
+  padding: 12px 16px;
+  background: #f5f7fa;
+  border-radius: 6px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>✉️ HTML для писем</h1>
+  <span class="badge">offline</span>
+  <div class="spacer"></div>
+  <a class="help-link" href="инструкция.html" target="_blank">📖 Инструкция</a>
+</div>
+
+<div class="content">
+
+  <div id="no-mammoth" class="alert" style="display:none">
+    ⚠️ Библиотека <code>mammoth.browser.min.js</code> не найдена в этой папке.<br>
+    Скачайте файл по ссылке и положите рядом с <code>html_generator.html</code>:<br>
+    <a href="https://cdn.jsdelivr.net/npm/mammoth/mammoth.browser.min.js">
+      https://cdn.jsdelivr.net/npm/mammoth/mammoth.browser.min.js
+    </a>
+    <br>Затем обновите страницу (F5).
+  </div>
+
+  <div class="alert">
+    💡 Чтобы вставить кнопку, напишите в Word-документе отдельной строкой:<br>
+    <code>Кнопка: Текст надписи</code><br>
+    Программа автоматически найдёт эту строку и спросит цвет и ссылку.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Файл</div>
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" id="file-input" accept=".docx,.doc">
+      <div class="dz-icon">📂</div>
+      <div class="dz-hint">
+        Перетащите <b>.docx</b> сюда или нажмите для выбора<br>
+        <span style="font-size:12px;color:#999;">Формат .doc: сначала сохраните как .docx в Word или LibreOffice</span>
+      </div>
+      <div class="dz-file" id="dz-file"></div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="convertWord()">⚙️ Конвертировать</button>
+  <div class="status" id="word-st"></div>
+
+  <div id="word-out-wrap" style="display:none; margin-top:20px;">
+    <div class="card">
+      <div class="output-header">
+        <div class="card-title" style="margin:0">Готовый HTML</div>
+        <button class="btn btn-sm btn-copy" id="copy-word" onclick="doCopy('word-out','copy-word')">📋 Скопировать</button>
+      </div>
+      <div class="sep"></div>
+      <textarea id="word-out" rows="20" readonly></textarea>
+    </div>
+  </div>
+
+</div>
+
+<!-- BUTTON MODAL -->
+<div class="modal-overlay" id="btn-modal">
+  <div class="modal-box">
+    <div class="modal-title">
+      Настройка кнопки
+      <span class="modal-counter" id="btn-counter"></span>
+    </div>
+
+    <div class="modal-btn-label">
+      Текст надписи: <span id="btn-label-display"></span>
+    </div>
+
+    <div class="modal-field">
+      <label class="input-label">Цвет фона кнопки</label>
+      <div class="color-row">
+        <input type="color" id="btn-bg-color" value="#f06235">
+        <input type="text" class="text-input" id="btn-bg-hex" placeholder="#f06235">
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label class="input-label">Цвет текста</label>
+      <div class="color-row">
+        <input type="color" id="btn-txt-color" value="#ffffff">
+        <input type="text" class="text-input" id="btn-txt-hex" placeholder="#ffffff">
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label class="input-label">Ссылка (URL)</label>
+      <input type="text" class="text-input" id="btn-url" placeholder="https://...">
+    </div>
+
+    <div style="font-size:12px;color:#888;margin-top:4px;">Предпросмотр:</div>
+    <div class="btn-preview-wrap">
+      <a id="btn-preview" href="#" onclick="return false;"
+         style="display:inline-block;padding:12px 28px;border-radius:6px;font-weight:bold;font-size:14px;font-family:Arial,sans-serif;text-decoration:none;background:#f06235;color:#ffffff;">
+        Перейти
+      </a>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="skipButton()">Пропустить</button>
+      <button class="btn btn-primary" onclick="applyButton()">Вставить кнопку</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// Mammoth check
+
+if (typeof mammoth === 'undefined') {
+  document.getElementById('no-mammoth').style.display = 'block';
+}
+
+// Drop zone
+
+let currentFile = null;
+const dz = document.getElementById('drop-zone');
+const fi = document.getElementById('file-input');
+
+dz.addEventListener('click', () => fi.click());
+fi.addEventListener('change', () => pickFile(fi.files[0]));
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); pickFile(e.dataTransfer.files[0]); });
+
+function pickFile(f) {
+  if (!f) return;
+  currentFile = f;
+  document.getElementById('dz-file').textContent = '✓ ' + f.name + '  (' + (f.size / 1024).toFixed(1) + ' KB)';
+}
+
+// Button modal state
+
+let _btnTemplate    = '';
+let _btnTexts       = [];
+let _btnIdx         = 0;
+let _btnTotal       = 0;
+let _btnReplacements = [];
+let _btnMode        = '';
+let _btnWarnings    = 0;
+
+function wirePicker(pickerId, hexId) {
+  const picker = document.getElementById(pickerId);
+  const hex    = document.getElementById(hexId);
+  picker.addEventListener('input', () => { hex.value = picker.value; updatePreview(); });
+  hex.addEventListener('input', () => {
+    if (/^#[0-9a-f]{6}$/i.test(hex.value)) { picker.value = hex.value; updatePreview(); }
+  });
+}
+wirePicker('btn-bg-color', 'btn-bg-hex');
+wirePicker('btn-txt-color', 'btn-txt-hex');
+
+function updatePreview() {
+  const el    = document.getElementById('btn-preview');
+  const label = document.getElementById('btn-label-display').textContent;
+  el.textContent        = label || 'Перейти';
+  el.style.backgroundColor = document.getElementById('btn-bg-color').value;
+  el.style.color           = document.getElementById('btn-txt-color').value;
+}
+
+function findAndMarkButtons(html) {
+  const texts = [];
+  const marked = html.replace(/<p(?:\s[^>]*)?>[\s\S]*?<\/p>/gi, match => {
+    const text = match.replace(/<[^>]+>/g, '').trim();
+    const m = text.match(/^Кнопка:\s*(.+)/i);
+    if (!m) return match;
+    const label = m[1].trim();
+    const idx   = texts.length;
+    texts.push(label);
+    return `%%BTN${idx}%%`;
+  });
+  return { marked, texts };
+}
+
+function processButtons(html, mode, warnings) {
+  const { marked, texts } = findAndMarkButtons(html);
+
+  _btnTemplate     = marked;
+  _btnTexts        = texts;
+  _btnTotal        = texts.length;
+  _btnIdx          = 0;
+  _btnReplacements = [];
+  _btnMode         = mode;
+  _btnWarnings     = warnings;
+
+  if (_btnTotal === 0) {
+    finishWord(_btnTemplate);
+    return;
+  }
+  openButtonModal();
+}
+
+function openButtonModal() {
+  const label = _btnTexts[_btnIdx];
+
+  document.getElementById('btn-label-display').textContent = label;
+  document.getElementById('btn-counter').textContent =
+    _btnTotal > 1 ? `(${_btnIdx + 1} из ${_btnTotal})` : '';
+
+  document.getElementById('btn-bg-color').value  = '#f06235';
+  document.getElementById('btn-bg-hex').value    = '#f06235';
+  document.getElementById('btn-txt-color').value = '#ffffff';
+  document.getElementById('btn-txt-hex').value   = '#ffffff';
+  document.getElementById('btn-url').value        = '';
+
+  const prev = document.getElementById('btn-preview');
+  prev.textContent        = label;
+  prev.style.backgroundColor = '#f06235';
+  prev.style.color           = '#ffffff';
+
+  document.getElementById('btn-modal').classList.add('open');
+  document.getElementById('btn-url').focus();
+}
+
+function applyButton() {
+  const label  = _btnTexts[_btnIdx];
+  const bgColor  = document.getElementById('btn-bg-color').value;
+  const txtColor = document.getElementById('btn-txt-color').value;
+  const url      = document.getElementById('btn-url').value.trim() || '#';
+
+  const btnHtml =
+    `<p style="text-align:center;margin:16px 0;">` +
+    `<a href="${url}" style="display:inline-block;background-color:${bgColor};` +
+    `color:${txtColor};padding:12px 32px;text-decoration:none;border-radius:6px;` +
+    `font-weight:bold;font-family:Arial,sans-serif;font-size:15px;">${label}</a></p>`;
+
+  _btnReplacements.push(btnHtml);
+  nextButton();
+}
+
+function skipButton() {
+  _btnReplacements.push(`<p>Кнопка: ${_btnTexts[_btnIdx]}</p>`);
+  nextButton();
+}
+
+function nextButton() {
+  document.getElementById('btn-modal').classList.remove('open');
+  _btnIdx++;
+  if (_btnIdx < _btnTotal) {
+    openButtonModal();
+  } else {
+    let html = _btnTemplate;
+    _btnReplacements.forEach((btnHtml, i) => {
+      html = html.replace(`%%BTN${i}%%`, btnHtml);
+    });
+    finishWord(html);
+  }
+}
+
+function finishWord(html) {
+  if (_btnMode === 'email') html = toEmailHtml(html);
+  document.getElementById('word-out').value = html;
+  document.getElementById('word-out-wrap').style.display = 'block';
+  status('word-st',
+    '✅ Готово!' + (_btnWarnings ? '  ' + _btnWarnings + ' предупреждений.' : '') +
+    (_btnTotal ? `  Кнопок вставлено: ${_btnReplacements.filter(r => r.includes('<a ')).length} из ${_btnTotal}.` : ''),
+    'ok');
+}
+
+// Word → HTML (email mode)
+
+function convertWord() {
+  if (!currentFile) return status('word-st', 'Выберите файл', 'err');
+
+  const ext = currentFile.name.split('.').pop().toLowerCase();
+  if (ext === 'doc') {
+    return status('word-st',
+      'Формат .doc не поддерживается браузером. Откройте в Word / LibreOffice, ' +
+      'выберите Сохранить как → .docx и загрузите снова.', 'err');
+  }
+  if (ext !== 'docx') return status('word-st', 'Поддерживается только .docx', 'err');
+  if (typeof mammoth === 'undefined') return status('word-st', 'Библиотека mammoth.browser.min.js не загружена — см. инструкцию выше', 'err');
+
+  const mode = 'email';
+  status('word-st', 'Конвертирую…', 'info');
+
+  const mammothOptions = {
+    styleMap: [
+      "p[style-name='Heading 1'] => h1:fresh",
+      "p[style-name='Heading 2'] => h2:fresh",
+      "p[style-name='Heading 3'] => h3:fresh",
+      "p[style-name='Heading 4'] => h4:fresh",
+      "p[style-name='Заголовок 1'] => h1:fresh",
+      "p[style-name='Заголовок 2'] => h2:fresh",
+      "p[style-name='Заголовок 3'] => h3:fresh",
+      "p[style-name='Заголовок 4'] => h4:fresh",
+      "u => u",
+      "strike => s",
+    ],
+    convertImage: mammoth.images.imgElement(img =>
+      img.read('base64').then(b64 => ({
+        src: 'data:' + img.contentType + ';base64,' + b64
+      }))
+    )
+  };
+
+  const r = new FileReader();
+  r.onload = function(e) {
+    mammoth.convertToHtml({ arrayBuffer: e.target.result }, mammothOptions)
+      .then(result => {
+        const w = result.messages.filter(m => m.type === 'warning').length;
+        processButtons(postProcessHtml(result.value), mode, w);
+      })
+      .catch(err => status('word-st', '❌ Ошибка: ' + err.message, 'err'));
+  };
+  r.readAsArrayBuffer(currentFile);
+}
+
+// Восстанавливает рамки таблиц (mammoth их теряет)
+function postProcessHtml(html) {
+  return html
+    .replace(/<table>/gi,
+      '<table style="width:100%;border-collapse:collapse;border:1px solid #000000;margin:14px auto;">')
+    .replace(/<td>/gi,
+      '<td style="padding:12px 14px;border:1px solid #000000;vertical-align:top;">');
+}
+
+// Инлайн-стили для email через DOMParser
+function toEmailHtml(html) {
+  const STYLE = {
+    H1:     'font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:bold;color:#1a1a1a;margin:20px 0 10px;line-height:1.3;',
+    H2:     'font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:bold;color:#1a1a1a;margin:16px 0 8px;line-height:1.3;',
+    H3:     'font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#1a1a1a;margin:14px 0 6px;line-height:1.3;',
+    H4:     'font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:#1a1a1a;margin:12px 0 4px;',
+    P:      'font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1a1a1a;margin:0 0 12px;line-height:1.6;',
+    TABLE:  'border-collapse:collapse;width:100%;border:1px solid #000000;margin:14px auto;',
+    TD:     'font-family:Arial,Helvetica,sans-serif;font-size:14px;padding:12px 14px;border:1px solid #000000;vertical-align:top;',
+    TH:     'font-family:Arial,Helvetica,sans-serif;font-size:14px;padding:12px 14px;border:1px solid #000000;background-color:#f5f5f5;font-weight:bold;vertical-align:top;',
+    LI:     'font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1a1a1a;line-height:1.6;margin-bottom:4px;',
+    UL:     'margin:0 0 12px;padding-left:24px;',
+    OL:     'margin:0 0 12px;padding-left:24px;',
+    A:      'color:#0969da;',
+    U:      'text-decoration:underline;',
+    STRONG: 'font-weight:bold;',
+    EM:     'font-style:italic;',
+    S:      'text-decoration:line-through;',
+  };
+
+  const doc = new DOMParser().parseFromString('<body>' + html + '</body>', 'text/html');
+
+  for (const [tag, style] of Object.entries(STYLE)) {
+    doc.querySelectorAll(tag).forEach(el => {
+      const existing = el.getAttribute('style') || '';
+      if (tag === 'A' && /\bcolor\s*:/.test(existing)) return;
+      el.setAttribute('style', (existing ? existing.replace(/;$/, '') + ';' : '') + style);
+    });
+  }
+
+  return '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1a1a1a;max-width:600px;margin:0 auto;">\n'
+       + doc.body.innerHTML
+       + '\n</div>';
+}
+
+// Utilities
+
+function status(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'status show ' + type;
+}
+
+function doCopy(textareaId, btnId) {
+  const val  = document.getElementById(textareaId).value;
+  const btn  = document.getElementById(btnId);
+  const orig = btn.innerHTML;
+  const done = () => {
+    btn.textContent = '✓ Скопировано!';
+    btn.classList.add('done');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('done'); }, 2000);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(val).then(done);
+  } else {
+    document.getElementById(textareaId).select();
+    document.execCommand('copy');
+    done();
+  }
+}
+</script>
+</body>
+</html>
